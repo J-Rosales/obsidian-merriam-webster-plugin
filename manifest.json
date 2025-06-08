@@ -1,9 +1,9 @@
 {
-       "id": "merriam-webster-plugin",
-       "name": "Merriam-Webster Dictionary",
-	"version": "1.0.0",
+	"id": "merriam-webster-plugin",
+	"name": "Merriam-Webster Dictionary",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-       "description": "Look up definitions and synonyms using Merriam-Webster APIs.",
+	"description": "Look up definitions and synonyms using Merriam-Webster APIs.",
 	"author": "Obsidian",
 	"authorUrl": "https://obsidian.md",
 	"fundingUrl": "https://obsidian.md/pricing",
