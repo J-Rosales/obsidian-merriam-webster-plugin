@@ -139,3 +139,17 @@ If your plugin does not need CSS, delete this file.
   font-style: italic;
 }
 
+/* Tooltip showing synonyms when hovering over a selection */
+.mw-hover-tooltip {
+  position: fixed;
+  pointer-events: none;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background-color: var(--mw-bg-secondary);
+  border: 1px solid var(--mw-border-color);
+  color: var(--mw-text-color);
+  font-family: var(--mw-font-family);
+  font-size: var(--mw-font-size);
+  z-index: 1000;
+}
+
