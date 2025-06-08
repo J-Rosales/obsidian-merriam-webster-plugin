@@ -13,7 +13,7 @@ functions for performing lookups using those keys.
 2. Open **Settings → Merriam-Webster Dictionary** and enter your API keys for the dictionary and thesaurus.
 3. Select a single word in an editor pane and open the context menu.
 4. Choose **Define** to open the side panel showing definitions and synonyms.
-5. Select a word from the **Synonyms** submenu to replace your selection.
+5. Up to five suggested synonyms appear above **Define** in the context menu. Select one to replace your selection. The menu waits briefly for these suggestions, so they may not appear if the lookup takes too long.
 6. In the Definitions view you can type another word in the search field and press **Enter** to look it up.
 
 You can obtain free API keys from <https://www.dictionaryapi.com/>.

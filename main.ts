@@ -42,6 +42,32 @@ export default class MerriamWebsterPlugin extends Plugin {
         }
         const word = selection;
 
+        try {
+          const syns = await Promise.race([
+            this.lookupSynonyms(word),
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 1000)),
+          ]);
+          if (syns) {
+            const list = syns.synonyms.slice(0, 5).sort();
+            for (const s of list) {
+              menu.addItem((item) => {
+                item
+                  .setTitle(s)
+                  .setIcon('pencil')
+                  .setSection('mw-dictionary')
+                  .onClick(() => {
+                    editor.replaceSelection(s);
+                  });
+                (item as any).dom?.addClass('mw-synonym-item');
+              });
+            }
+          }
+        } catch (err) {
+          console.error('Failed to fetch synonyms', err);
+          const msg = err instanceof Error ? err.message : String(err);
+          new Notice(`Failed to fetch synonyms: ${msg}`);
+        }
+
         menu.addItem((item) => {
           item
             .setTitle('Define')
@@ -51,31 +77,6 @@ export default class MerriamWebsterPlugin extends Plugin {
               this.openDefinitionsView(word);
             });
         });
-
-        try {
-          const syns = await this.lookupSynonyms(word);
-          if (syns.synonyms.length > 0) {
-            const subMenu = new Menu();
-            for (const s of syns.synonyms.sort()) {
-              subMenu.addItem((sub) =>
-                sub.setTitle(s).onClick(() => {
-                  editor.replaceSelection(s);
-                })
-              );
-            }
-            menu.addItem((item) => {
-              item
-                .setTitle('Synonyms')
-                .setIcon('pencil')
-                .setSection('mw-dictionary')
-                .setSubmenu(subMenu);
-            });
-          }
-        } catch (err) {
-          console.error('Failed to fetch synonyms', err);
-          const msg = err instanceof Error ? err.message : String(err);
-          new Notice(`Failed to fetch synonyms: ${msg}`);
-        }
       })
     );
   }
