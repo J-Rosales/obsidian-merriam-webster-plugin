@@ -1,6 +1,10 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import type MerriamWebsterPlugin from '../main';
-import { DictionaryResult, ThesaurusResult } from './merriamWebsterApi';
+import {
+  DictionaryResult,
+  ThesaurusResult,
+  ThesaurusSynonym,
+} from './merriamWebsterApi';
 
 function toTitleCase(str: string): string {
   return str
@@ -64,23 +68,57 @@ export default class DefinitionsView extends ItemView {
     try {
       const defs: DictionaryResult = await this.plugin.lookupDefinitions(this.word);
       defsDiv.createEl('h3', { text: toTitleCase(this.word) });
-      if (defs.pluralForm) {
-        defsDiv.createEl('div', { text: `Plural: ${defs.pluralForm}` });
-      }
-      for (const entry of defs.entries) {
-        if (entry.wordType) {
-          defsDiv.createEl('h4', { text: entry.wordType });
+
+      if (defs.pluralForms && defs.pluralForms.length > 0) {
+        const pluralLine = defsDiv.createDiv();
+        pluralLine.appendText('plural ');
+        const first = defs.pluralForms[0];
+        pluralLine.createEl('code', { text: first });
+        for (let i = 1; i < defs.pluralForms.length; i++) {
+          pluralLine.appendText(', ');
+          pluralLine.createEl('em', { text: 'also' });
+          pluralLine.appendText(' ');
+          pluralLine.createEl('code', { text: defs.pluralForms[i] });
         }
-        const list = defsDiv.createEl('ol');
+      }
+
+      const entriesOl = defsDiv.createEl('ol', { cls: 'mw-entry-list' });
+      for (const entry of defs.entries) {
+        const entryLi = entriesOl.createEl('li');
+        if (entry.wordType) {
+          entryLi.createEl('h4', { text: entry.wordType });
+        }
+        const defList = entryLi.createEl('ol');
+        defList.type = 'a';
         for (const d of entry.definitions) {
           const clean = d.charAt(0).toUpperCase() + d.slice(1);
-          list.createEl('li', { text: clean });
+          const trimmed = clean.replace(/[.;!?]+$/, '');
+          const words = trimmed.split(/\s+/);
+          if (words.length === 1) {
+            const li = defList.createEl('li');
+            const btn = li.createEl('button', {
+              text: trimmed,
+              cls: 'mw-word-btn',
+            });
+            btn.addEventListener('click', () => {
+              this.setWord(trimmed.toLowerCase());
+            });
+          } else {
+            defList.createEl('li', { text: clean });
+          }
         }
         if (entry.examples.length > 0) {
-          defsDiv.createEl('h5', { text: 'Usage' });
-          const usage = defsDiv.createEl('ul');
+          entryLi.createEl('h5', { text: 'Usage' });
           for (const ex of entry.examples) {
-            usage.createEl('li', { text: ex });
+            const forms = [this.word.toLowerCase()];
+            if (defs.pluralForms) forms.push(...defs.pluralForms.map((p) => p.toLowerCase()));
+            let html = ex;
+            for (const f of forms) {
+              const re = new RegExp(`\\b${f}\\b`, 'gi');
+              html = html.replace(re, (m) => `<strong>${m}</strong>`);
+            }
+            const block = entryLi.createEl('blockquote');
+            block.innerHTML = html;
           }
         }
       }
@@ -95,9 +133,18 @@ export default class DefinitionsView extends ItemView {
       const list = synDiv.createEl('ul');
       for (const s of syns.synonyms) {
         const li = list.createEl('li');
-        const btn = li.createEl('button', { text: toTitleCase(s) });
+        const btn = li.createEl('button', {
+          text: toTitleCase(s.word),
+          cls: 'mw-word-btn',
+        });
+        const label = s.label?.toLowerCase();
+        if (label) {
+          if (label.includes('formal')) btn.addClass('mw-word-btn-formal');
+          else if (label.includes('archaic')) btn.addClass('mw-word-btn-archaic');
+          else if (label.includes('literary')) btn.addClass('mw-word-btn-literary');
+        }
         btn.addEventListener('click', () => {
-          this.setWord(s);
+          this.setWord(s.word);
         });
       }
     } catch (err) {
