@@ -236,6 +236,7 @@ class MerriamWebsterSettingTab extends PluginSettingTab {
 
     const cacheSetting = new Setting(containerEl)
       .setName('Cache size')
+      .setDesc('')
       .addText((text) => {
         text.inputEl.type = 'number';
         text.inputEl.step = '1';
@@ -262,7 +263,7 @@ class MerriamWebsterSettingTab extends PluginSettingTab {
             updateCacheInfo();
           });
       });
-    const infoEl = cacheSetting.settingEl.createEl('small');
+    const infoEl = cacheSetting.descEl as HTMLElement;
     const formatCacheSize = () => {
       const bytes = new TextEncoder().encode(
         JSON.stringify(this.plugin.settings.cache)

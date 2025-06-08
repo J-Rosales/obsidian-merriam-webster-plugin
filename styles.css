@@ -27,7 +27,13 @@ If your plugin does not need CSS, delete this file.
 
 .mw-definitions-view input[type="text"] {
   width: 100%;
+  margin-bottom: 0.25em;
+}
+
+.mw-search-hint {
   margin-bottom: 1em;
+  font-size: 0.8em;
+  color: var(--text-muted);
 }
 
 .mw-definitions,
@@ -45,20 +51,21 @@ If your plugin does not need CSS, delete this file.
   color: var(--mw-heading-color);
 }
 
+
 .mw-definitions h4 {
   margin-top: 0;
   margin-bottom: 0.25em;
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 .mw-definitions h5 {
   margin-top: 0.5em;
   margin-bottom: 0.25em;
-  font-size: 0.8em;
+  font-size: 0.9em;
 }
 
 .mw-entry-list {
-  margin-left: 1em;
+  margin-left: 0.5em;
 }
 
 .mw-entry-list > li {
@@ -67,7 +74,7 @@ If your plugin does not need CSS, delete this file.
 
 .mw-entry-list ol {
   list-style-type: lower-alpha;
-  margin-left: 1.25em;
+  margin-left: 1em;
 }
 
 .mw-word-btn {
@@ -118,5 +125,15 @@ If your plugin does not need CSS, delete this file.
 
 .mw-api-status.error {
   color: red;
+}
+
+.mw-not-found {
+  margin-top: 1em;
+  font-style: italic;
+}
+
+.mw-no-synonyms {
+  font-size: 0.8em;
+  font-style: italic;
 }
 
