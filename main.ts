@@ -116,30 +116,74 @@ class MerriamWebsterSettingTab extends PluginSettingTab {
     containerEl.empty();
     containerEl.createEl('h2', { text: 'Merriam-Webster Settings' });
 
-    new Setting(containerEl)
+    // Dictionary API key setting with validation
+    const dictSetting = new Setting(containerEl)
       .setName('Dictionary API Key')
-      .setDesc('Key used for dictionary lookups')
-      .addText(text =>
-        text
-          .setPlaceholder('Enter your dictionary API key')
-          .setValue(this.plugin.settings.dictionaryApiKey)
-          .onChange(async value => {
-            this.plugin.settings.dictionaryApiKey = value.trim();
-            await this.plugin.saveSettings();
-          })
-      );
+      .setDesc('Key used for dictionary lookups');
 
-    new Setting(containerEl)
+    const dictStatus = dictSetting.controlEl.createSpan({ cls: 'mw-api-status', text: '–' });
+
+    dictSetting.addText((text) =>
+      text
+        .setPlaceholder('Enter your dictionary API key')
+        .setValue(this.plugin.settings.dictionaryApiKey)
+        .onChange(async (value) => {
+          this.plugin.settings.dictionaryApiKey = value.trim();
+          await this.plugin.saveSettings();
+          dictStatus.setText('–');
+          dictStatus.removeClass('success');
+          dictStatus.removeClass('error');
+        })
+    );
+
+    dictSetting.addButton((btn) => {
+      btn.setButtonText('Validate').onClick(async () => {
+        try {
+          await this.plugin.lookupDefinitions('test');
+          dictStatus.setText('✓');
+          dictStatus.removeClass('error');
+          dictStatus.addClass('success');
+        } catch (err) {
+          dictStatus.setText('✗');
+          dictStatus.removeClass('success');
+          dictStatus.addClass('error');
+        }
+      });
+    });
+
+    // Thesaurus API key setting with validation
+    const thesSetting = new Setting(containerEl)
       .setName('Thesaurus API Key')
-      .setDesc('Key used for thesaurus lookups')
-      .addText(text =>
-        text
-          .setPlaceholder('Enter your thesaurus API key')
-          .setValue(this.plugin.settings.thesaurusApiKey)
-          .onChange(async value => {
-            this.plugin.settings.thesaurusApiKey = value.trim();
-            await this.plugin.saveSettings();
-          })
-      );
+      .setDesc('Key used for thesaurus lookups');
+
+    const thesStatus = thesSetting.controlEl.createSpan({ cls: 'mw-api-status', text: '–' });
+
+    thesSetting.addText((text) =>
+      text
+        .setPlaceholder('Enter your thesaurus API key')
+        .setValue(this.plugin.settings.thesaurusApiKey)
+        .onChange(async (value) => {
+          this.plugin.settings.thesaurusApiKey = value.trim();
+          await this.plugin.saveSettings();
+          thesStatus.setText('–');
+          thesStatus.removeClass('success');
+          thesStatus.removeClass('error');
+        })
+    );
+
+    thesSetting.addButton((btn) => {
+      btn.setButtonText('Validate').onClick(async () => {
+        try {
+          await this.plugin.lookupSynonyms('test');
+          thesStatus.setText('✓');
+          thesStatus.removeClass('error');
+          thesStatus.addClass('success');
+        } catch (err) {
+          thesStatus.setText('✗');
+          thesStatus.removeClass('success');
+          thesStatus.addClass('error');
+        }
+      });
+    });
   }
 }

@@ -44,10 +44,21 @@ If your plugin does not need CSS, delete this file.
   color: var(--mw-heading-color);
 }
 
-.mw-definitions ul,
-.mw-synonyms ul {
+.mw-definitions h4 {
+  margin-top: 0;
+  margin-bottom: 0.25em;
+  font-size: 0.9em;
+}
+
+.mw-definitions ul {
   list-style-type: disc;
   margin: 0 0 0.5em 1.25em;
+  padding: 0;
+}
+
+.mw-synonyms ul {
+  list-style-type: none;
+  margin: 0 0 0.5em 0;
   padding: 0;
 }
 
@@ -59,4 +70,18 @@ If your plugin does not need CSS, delete this file.
 /* Context menu synonym items */
 .menu-item.mw-synonym-item {
   background-color: var(--text-highlight-bg);
+}
+
+/* Status icon for API key validation */
+.mw-api-status {
+  margin-left: 8px;
+  color: #888;
+}
+
+.mw-api-status.success {
+  color: #2ecc71;
+}
+
+.mw-api-status.error {
+  color: #ff3333;
 }
