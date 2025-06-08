@@ -43,19 +43,24 @@ export default class MerriamWebsterPlugin extends Plugin {
         const word = selection;
 
         try {
-          const syns = await this.lookupSynonyms(word);
-          const list = syns.synonyms.slice(0, 5).sort();
-          for (const s of list) {
-            menu.addItem((item) => {
-              item
-                .setTitle(s)
-                .setIcon('pencil')
-                .setSection('mw-dictionary')
-                .onClick(() => {
-                  editor.replaceSelection(s);
-                });
-              (item as any).dom?.addClass('mw-synonym-item');
-            });
+          const syns = await Promise.race([
+            this.lookupSynonyms(word),
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 1000)),
+          ]);
+          if (syns) {
+            const list = syns.synonyms.slice(0, 5).sort();
+            for (const s of list) {
+              menu.addItem((item) => {
+                item
+                  .setTitle(s)
+                  .setIcon('pencil')
+                  .setSection('mw-dictionary')
+                  .onClick(() => {
+                    editor.replaceSelection(s);
+                  });
+                (item as any).dom?.addClass('mw-synonym-item');
+              });
+            }
           }
         } catch (err) {
           console.error('Failed to fetch synonyms', err);
