@@ -60,3 +60,17 @@ If your plugin does not need CSS, delete this file.
 .menu-item.mw-synonym-item {
   background-color: var(--text-highlight-bg);
 }
+
+/* Status icon for API key validation */
+.mw-api-status {
+  margin-left: 8px;
+  color: #888;
+}
+
+.mw-api-status.success {
+  color: #2ecc71;
+}
+
+.mw-api-status.error {
+  color: #ff3333;
+}
