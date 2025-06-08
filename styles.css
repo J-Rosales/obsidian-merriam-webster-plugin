@@ -22,6 +22,7 @@ If your plugin does not need CSS, delete this file.
   font-family: var(--mw-font-family);
   font-size: var(--mw-font-size);
   color: var(--mw-text-color);
+  overflow-y: auto;
 }
 
 .mw-definitions-view input[type="text"] {
@@ -60,10 +61,14 @@ If your plugin does not need CSS, delete this file.
   list-style-type: none;
   margin: 0 0 0.5em 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25em;
 }
 
 .mw-definitions li,
 .mw-synonyms li {
   margin-bottom: 0.25em;
+  margin-right: 0.25em;
 }
 

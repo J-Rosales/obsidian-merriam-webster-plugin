@@ -64,16 +64,25 @@ export default class DefinitionsView extends ItemView {
     try {
       const defs: DictionaryResult = await this.plugin.lookupDefinitions(this.word);
       defsDiv.createEl('h3', { text: toTitleCase(this.word) });
-      if (defs.wordType) {
-        defsDiv.createEl('h4', { text: defs.wordType });
-      }
       if (defs.pluralForm) {
         defsDiv.createEl('div', { text: `Plural: ${defs.pluralForm}` });
       }
-      const list = defsDiv.createEl('ol');
-      for (const d of defs.definitions) {
-        const clean = d.charAt(0).toUpperCase() + d.slice(1);
-        list.createEl('li', { text: clean });
+      for (const entry of defs.entries) {
+        if (entry.wordType) {
+          defsDiv.createEl('h4', { text: entry.wordType });
+        }
+        const list = defsDiv.createEl('ol');
+        for (const d of entry.definitions) {
+          const clean = d.charAt(0).toUpperCase() + d.slice(1);
+          list.createEl('li', { text: clean });
+        }
+        if (entry.examples.length > 0) {
+          defsDiv.createEl('h5', { text: 'Usage' });
+          const usage = defsDiv.createEl('ul');
+          for (const ex of entry.examples) {
+            usage.createEl('li', { text: ex });
+          }
+        }
       }
     } catch (err) {
       defsDiv.createEl('div', { text: String(err) });
