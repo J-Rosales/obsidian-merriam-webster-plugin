@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting, Menu, WorkspaceLeaf, Notice } from 'obsidian';
+import { App, Plugin, PluginSettingTab, Setting, Menu, WorkspaceLeaf, Notice, MarkdownView } from 'obsidian';
 import { fetchDictionary, fetchThesaurus, DictionaryResult, ThesaurusResult } from './src/merriamWebsterApi';
 import DefinitionsView, { VIEW_TYPE_DEFINITIONS } from './src/definitionsView';
 
@@ -26,6 +26,8 @@ const DEFAULT_SETTINGS: MerriamWebsterPluginSettings = {
 
 export default class MerriamWebsterPlugin extends Plugin {
   settings: MerriamWebsterPluginSettings;
+  private hoverTimeout?: number;
+  private hoverTooltipEl?: HTMLElement;
 
   async openDefinitionsView(word: string) {
     let leaf: WorkspaceLeaf;
@@ -80,6 +82,8 @@ export default class MerriamWebsterPlugin extends Plugin {
         return true;
       },
     });
+
+    this.setupHoverTooltip();
   }
 
   onunload() {
@@ -109,11 +113,20 @@ export default class MerriamWebsterPlugin extends Plugin {
     await this.saveData(this.settings);
   }
 
+  private getCachedEntry(word: string): CacheEntry | undefined {
+    const key = word.toLowerCase();
+    return this.settings.cache.find((e) => e.word.toLowerCase() === key);
+  }
+
   async lookupDefinitions(word: string): Promise<DictionaryResult> {
+    const cached = this.getCachedEntry(word);
+    if (cached) return cached.dictionary;
     return fetchDictionary(word, this.settings.dictionaryApiKey);
   }
 
   async lookupSynonyms(word: string): Promise<ThesaurusResult> {
+    const cached = this.getCachedEntry(word);
+    if (cached) return cached.thesaurus;
     return fetchThesaurus(word, this.settings.thesaurusApiKey);
   }
 
@@ -135,6 +148,57 @@ export default class MerriamWebsterPlugin extends Plugin {
       this.settings.cache.splice(0, this.settings.cache.length - this.settings.cacheSize);
     }
     await this.saveSettings();
+  }
+
+  private setupHoverTooltip() {
+    const container = this.app.workspace.containerEl;
+    this.registerDomEvent(container, 'mousemove', (e: MouseEvent) => {
+      if (this.hoverTimeout) window.clearTimeout(this.hoverTimeout);
+      this.hideHoverTooltip();
+      this.hoverTimeout = window.setTimeout(() => this.maybeShowHoverTooltip(e), 1000);
+    });
+    this.registerDomEvent(container, 'keydown', () => this.hideHoverTooltip());
+    this.registerDomEvent(container, 'mousedown', () => this.hideHoverTooltip());
+  }
+
+  private async maybeShowHoverTooltip(e: MouseEvent) {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    const editor = view?.editor;
+    if (!editor) return;
+    const selection = editor.getSelection().trim();
+    if (!selection || /\s/.test(selection)) return;
+    try {
+      const result = await this.lookupSynonyms(selection);
+      const list = Array.from(new Set(result.synonyms.map((s) => s.word)))
+        .slice(0, 5)
+        .join(', ');
+      if (list) {
+        this.showHoverTooltip(list, e.pageX + 10, e.pageY + 10);
+      }
+    } catch (err) {
+      /* ignore errors */
+    }
+  }
+
+  private showHoverTooltip(text: string, x: number, y: number) {
+    if (!this.hoverTooltipEl) {
+      this.hoverTooltipEl = createDiv({ cls: 'mw-hover-tooltip' });
+      document.body.appendChild(this.hoverTooltipEl);
+    }
+    this.hoverTooltipEl.textContent = text;
+    this.hoverTooltipEl.style.left = `${x}px`;
+    this.hoverTooltipEl.style.top = `${y}px`;
+    this.hoverTooltipEl.style.display = 'block';
+  }
+
+  private hideHoverTooltip() {
+    if (this.hoverTimeout) {
+      window.clearTimeout(this.hoverTimeout);
+      this.hoverTimeout = undefined;
+    }
+    if (this.hoverTooltipEl) {
+      this.hoverTooltipEl.style.display = 'none';
+    }
   }
 }
 

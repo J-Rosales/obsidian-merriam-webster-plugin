@@ -22,6 +22,7 @@ If your plugin does not need CSS, delete this file.
   font-family: var(--mw-font-family);
   font-size: var(--mw-font-size);
   color: var(--mw-text-color);
+  line-height: 1.2;
   overflow-y: auto;
 }
 
@@ -82,20 +83,21 @@ If your plugin does not need CSS, delete this file.
   border: none;
   border-radius: 4px;
   padding: 2px 6px;
-  background-color: var(--interactive-accent);
-  color: var(--text-on-accent);
+  background-color: var(--interactive-accent) !important;
+  color: var(--text-on-accent) !important;
+  line-height: 1;
 }
 
 .mw-word-btn-formal {
-  background-color: color-mix(in srgb, var(--interactive-accent) 50%, #a79c8a);
+  filter: brightness(85%) !important;
 }
 
 .mw-word-btn-archaic {
-  background-color: color-mix(in srgb, var(--interactive-accent) 70%, #000000);
+  filter: brightness(70%) !important;
 }
 
 .mw-word-btn-literary {
-  background-color: color-mix(in srgb, var(--interactive-accent) 50%, var(--text-accent));
+  filter: saturate(120%) !important;
 }
 
 .mw-definitions ul {
@@ -135,5 +137,19 @@ If your plugin does not need CSS, delete this file.
 .mw-no-synonyms {
   font-size: 0.8em;
   font-style: italic;
+}
+
+/* Tooltip showing synonyms when hovering over a selection */
+.mw-hover-tooltip {
+  position: fixed;
+  pointer-events: none;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background-color: var(--mw-bg-secondary);
+  border: 1px solid var(--mw-border-color);
+  color: var(--mw-text-color);
+  font-family: var(--mw-font-family);
+  font-size: var(--mw-font-size);
+  z-index: 1000;
 }
 
