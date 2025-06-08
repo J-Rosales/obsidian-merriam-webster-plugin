@@ -64,7 +64,6 @@ export default class MerriamWebsterPlugin extends Plugin {
             }
             menu.addItem((item) => {
               item.setTitle('Synonyms');
-              // @ts-ignore - setSubmenu is available at runtime
               item.setSubmenu(subMenu);
             });
           }
