@@ -112,3 +112,11 @@ If your plugin does not need CSS, delete this file.
   margin-right: 0.25em;
 }
 
+.mw-api-status.success {
+  color: green;
+}
+
+.mw-api-status.error {
+  color: red;
+}
+

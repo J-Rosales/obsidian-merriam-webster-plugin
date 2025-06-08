@@ -5,11 +5,15 @@ import DefinitionsView, { VIEW_TYPE_DEFINITIONS } from './src/definitionsView';
 interface MerriamWebsterPluginSettings {
   dictionaryApiKey: string;
   thesaurusApiKey: string;
+  synonymsOnTop: boolean;
+  cacheSize: number;
 }
 
 const DEFAULT_SETTINGS: MerriamWebsterPluginSettings = {
   dictionaryApiKey: '',
   thesaurusApiKey: '',
+  synonymsOnTop: false,
+  cacheSize: 0,
 };
 
 export default class MerriamWebsterPlugin extends Plugin {
@@ -174,5 +178,33 @@ class MerriamWebsterSettingTab extends PluginSettingTab {
         }
       });
     });
+
+    new Setting(containerEl)
+      .setName('Synonyms on Top')
+      .setDesc('Show the synonyms section above definitions')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.synonymsOnTop)
+          .onChange(async (value) => {
+            this.plugin.settings.synonymsOnTop = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName('Cache size')
+      .addText((text) => {
+        text.inputEl.type = 'number';
+        text.inputEl.step = '1';
+        text.inputEl.style.width = '6em';
+        text
+          .setPlaceholder('0')
+          .setValue(String(this.plugin.settings.cacheSize))
+          .onChange(async (value) => {
+            const parsed = parseInt(value);
+            this.plugin.settings.cacheSize = isNaN(parsed) ? 0 : parsed;
+            await this.plugin.saveSettings();
+          });
+      });
   }
 }

@@ -64,7 +64,15 @@ export default class DefinitionsView extends ItemView {
       return;
     }
 
-    const defsDiv = containerEl.createDiv('mw-definitions');
+    let defsDiv: HTMLDivElement;
+    let synDiv: HTMLDivElement;
+    if (this.plugin.settings.synonymsOnTop) {
+      synDiv = containerEl.createDiv('mw-synonyms');
+      defsDiv = containerEl.createDiv('mw-definitions');
+    } else {
+      defsDiv = containerEl.createDiv('mw-definitions');
+      synDiv = containerEl.createDiv('mw-synonyms');
+    }
     try {
       const defs: DictionaryResult = await this.plugin.lookupDefinitions(this.word);
       defsDiv.createEl('h3', { text: toTitleCase(this.word) });
@@ -126,7 +134,6 @@ export default class DefinitionsView extends ItemView {
       defsDiv.createEl('div', { text: String(err) });
     }
 
-    const synDiv = containerEl.createDiv('mw-synonyms');
     synDiv.createEl('h3', { text: 'Synonyms' });
     try {
       const syns: ThesaurusResult = await this.plugin.lookupSynonyms(this.word);
