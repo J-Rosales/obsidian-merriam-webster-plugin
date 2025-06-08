@@ -7,11 +7,51 @@ If your plugin does not need CSS, delete this file.
 
 */
 
+/* Color and typography variables that follow Obsidian's theme */
+:root {
+  --mw-font-family: var(--font-text);
+  --mw-font-size: var(--font-small);
+  --mw-text-color: var(--text-normal);
+  --mw-heading-color: var(--text-accent);
+  --mw-bg-secondary: var(--background-secondary);
+  --mw-border-color: var(--background-modifier-border);
+}
+
 .mw-definitions-view {
-  padding: 10px;
+  padding: 1em;
+  font-family: var(--mw-font-family);
+  font-size: var(--mw-font-size);
+  color: var(--mw-text-color);
 }
 
 .mw-definitions-view input[type="text"] {
   width: 100%;
   margin-bottom: 1em;
+}
+
+.mw-definitions,
+.mw-synonyms {
+  margin-top: 1.5em;
+  padding: 0.5em;
+  background-color: var(--mw-bg-secondary);
+  border: 1px solid var(--mw-border-color);
+}
+
+.mw-definitions h3,
+.mw-synonyms h3 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  color: var(--mw-heading-color);
+}
+
+.mw-definitions ul,
+.mw-synonyms ul {
+  list-style-type: disc;
+  margin: 0 0 0.5em 1.25em;
+  padding: 0;
+}
+
+.mw-definitions li,
+.mw-synonyms li {
+  margin-bottom: 0.25em;
 }
