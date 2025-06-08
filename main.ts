@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting, Menu, WorkspaceLeaf } from 'obsidian';
+import { App, Plugin, PluginSettingTab, Setting, Menu, WorkspaceLeaf, Notice } from 'obsidian';
 import { fetchDictionary, fetchThesaurus, DictionaryResult, ThesaurusResult } from './src/merriamWebsterApi';
 import DefinitionsView, { VIEW_TYPE_DEFINITIONS } from './src/definitionsView';
 
@@ -68,8 +68,8 @@ export default class MerriamWebsterPlugin extends Plugin {
               item.setSubmenu(subMenu);
             });
           }
-        } catch {
-          /* ignore errors */
+        } catch (err) {
+          new Notice('Failed to fetch synonyms');
         }
       })
     );
