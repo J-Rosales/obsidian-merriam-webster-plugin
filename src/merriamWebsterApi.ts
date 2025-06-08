@@ -1,6 +1,8 @@
 export interface DictionaryResult {
   word: string;
   definitions: string[];
+  wordType?: string;
+  pluralForm?: string;
 }
 
 export interface ThesaurusResult {
@@ -30,13 +32,30 @@ export async function fetchDictionary(word: string, apiKey: string): Promise<Dic
   }
   const json = await res.json();
   if (!Array.isArray(json) || json.length === 0) {
-    const result = { word, definitions: [] };
+    const result = { word, definitions: [] } as DictionaryResult;
     dictionaryCache.set(key, result);
     return result;
   }
   const first = json[0];
   const defs = Array.isArray(first.shortdef) ? first.shortdef : [];
-  const result = { word, definitions: defs };
+  const wordType = typeof first.fl === 'string' ? first.fl : undefined;
+  let pluralForm: string | undefined;
+  const inflections =
+    first.ins ?? first.hwi?.ins ?? first.def?.[0]?.sseq?.[0]?.[0]?.[1]?.ins;
+  if (Array.isArray(inflections)) {
+    const plural = inflections.find(
+      (i: any) => typeof i.il === 'string' && i.il.toLowerCase().includes('plural')
+    );
+    if (plural && typeof plural.if === 'string') {
+      pluralForm = plural.if;
+    }
+  }
+  const result: DictionaryResult = {
+    word,
+    definitions: defs,
+    wordType,
+    pluralForm,
+  };
   dictionaryCache.set(key, result);
   return result;
 }
