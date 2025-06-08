@@ -68,7 +68,9 @@ export default class MerriamWebsterPlugin extends Plugin {
             });
           }
         } catch (err) {
-          new Notice('Failed to fetch synonyms');
+          console.error('Failed to fetch synonyms', err);
+          const msg = err instanceof Error ? err.message : String(err);
+          new Notice(`Failed to fetch synonyms: ${msg}`);
         }
       })
     );
