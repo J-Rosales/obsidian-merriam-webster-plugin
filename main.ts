@@ -35,7 +35,7 @@ export default class MerriamWebsterPlugin extends Plugin {
     this.addSettingTab(new MerriamWebsterSettingTab(this.app, this));
 
     this.registerEvent(
-      this.app.workspace.on('editor-menu', async (menu, editor) => {
+      this.app.workspace.on('editor-menu', (menu, editor) => {
         const selection = editor.getSelection().trim();
         if (!selection || /\s/.test(selection)) {
           return;
@@ -51,33 +51,23 @@ export default class MerriamWebsterPlugin extends Plugin {
               this.openDefinitionsView(word);
             });
         });
-
-        try {
-          const syns = await this.lookupSynonyms(word);
-          if (syns.synonyms.length > 0) {
-            const subMenu = new Menu();
-            for (const s of syns.synonyms.sort()) {
-              subMenu.addItem((sub) =>
-                sub.setTitle(s).onClick(() => {
-                  editor.replaceSelection(s);
-                })
-              );
-            }
-            menu.addItem((item) => {
-              item
-                .setTitle('Synonyms')
-                .setIcon('pencil')
-                .setSection('mw-dictionary')
-                .setSubmenu(subMenu);
-            });
-          }
-        } catch (err) {
-          console.error('Failed to fetch synonyms', err);
-          const msg = err instanceof Error ? err.message : String(err);
-          new Notice(`Failed to fetch synonyms: ${msg}`);
-        }
       })
     );
+
+    this.addCommand({
+      id: 'open-definitions-view',
+      name: 'Open Definitions View',
+      checkCallback: (checking: boolean) => {
+        const open = this.app.workspace.getLeavesOfType(VIEW_TYPE_DEFINITIONS).length > 0;
+        if (open) {
+          return false;
+        }
+        if (!checking) {
+          this.openDefinitionsView('');
+        }
+        return true;
+      },
+    });
   }
 
   onunload() {

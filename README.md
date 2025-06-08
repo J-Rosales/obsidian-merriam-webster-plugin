@@ -13,7 +13,7 @@ functions for performing lookups using those keys.
 2. Open **Settings → Merriam-Webster Dictionary** and enter your API keys for the dictionary and thesaurus.
 3. Select a single word in an editor pane and open the context menu.
 4. Choose **Define** to open the side panel showing definitions and synonyms.
-5. Select a word from the **Synonyms** submenu to replace your selection.
+5. You can also run **Open Definitions View** from the command palette to show the panel.
 6. In the Definitions view you can type another word in the search field and press **Enter** to look it up.
 
 You can obtain free API keys from <https://www.dictionaryapi.com/>.
@@ -70,7 +70,6 @@ and bundles the plugin so you can catch errors before pushing your work.
 
 If definitions or synonyms fail to load, check your API keys and network connectivity.
 Make sure the plugin was rebuilt (`npm run build`) before copying files to your vault.
-When right-clicking a word, any error received while fetching synonyms will now be shown in the notice popup. Check this message and the developer console for clues if lookups continue to fail.
 
 ## Manually installing the plugin
 
