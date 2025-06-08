@@ -7,6 +7,17 @@ At this stage of development the plugin provides a settings tab where you can st
 API keys for the dictionary and thesaurus endpoints. The code also includes helper
 functions for performing lookups using those keys.
 
+## Usage
+
+1. Install or clone this plugin into your vault.
+2. Open **Settings → Merriam-Webster Dictionary** and enter your API keys for the dictionary and thesaurus.
+3. Select a single word in an editor pane and open the context menu.
+4. Choose **Define** to open the side panel showing definitions and synonyms.
+5. Select a word from the **Synonyms** submenu to replace your selection.
+6. In the Definitions view you can type another word in the search field and press **Enter** to look it up.
+
+You can obtain free API keys from <https://www.dictionaryapi.com/>.
+
 ## First time developing plugins?
 
 Quick starting guide for new plugin devs:
