@@ -70,6 +70,7 @@ and bundles the plugin so you can catch errors before pushing your work.
 
 If definitions or synonyms fail to load, check your API keys and network connectivity.
 Make sure the plugin was rebuilt (`npm run build`) before copying files to your vault.
+When right-clicking a word, any error received while fetching synonyms will now be shown in the notice popup. Check this message and the developer console for clues if lookups continue to fail.
 
 ## Manually installing the plugin
 
