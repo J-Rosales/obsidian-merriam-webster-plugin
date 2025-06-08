@@ -2,6 +2,13 @@ import { ItemView, WorkspaceLeaf } from 'obsidian';
 import type MerriamWebsterPlugin from '../main';
 import { DictionaryResult, ThesaurusResult } from './merriamWebsterApi';
 
+function toTitleCase(str: string): string {
+  return str
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
 export const VIEW_TYPE_DEFINITIONS = 'merriam-webster-definitions';
 
 export default class DefinitionsView extends ItemView {
@@ -56,7 +63,7 @@ export default class DefinitionsView extends ItemView {
     const defsDiv = containerEl.createDiv('mw-definitions');
     try {
       const defs: DictionaryResult = await this.plugin.lookupDefinitions(this.word);
-      defsDiv.createEl('h3', { text: this.word });
+      defsDiv.createEl('h3', { text: toTitleCase(this.word) });
       if (defs.wordType) {
         defsDiv.createEl('h4', { text: defs.wordType });
       }
@@ -79,7 +86,7 @@ export default class DefinitionsView extends ItemView {
       const list = synDiv.createEl('ul');
       for (const s of syns.synonyms) {
         const li = list.createEl('li');
-        const btn = li.createEl('button', { text: s });
+        const btn = li.createEl('button', { text: toTitleCase(s) });
         btn.addEventListener('click', () => {
           this.setWord(s);
         });
