@@ -11,10 +11,14 @@
             "id": "33d79190ebf738aa",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Untitled"
             }
           }
         ]
@@ -163,6 +167,7 @@
   },
   "active": "33d79190ebf738aa",
   "lastOpenFiles": [
+    "Untitled.md",
     "node_modules/json-stable-stringify-without-jsonify/example/value_cmp.js",
     "node_modules/json-stable-stringify-without-jsonify/example/str.js",
     "node_modules/json-stable-stringify-without-jsonify/example/nested.js",
@@ -173,7 +178,6 @@
     "node_modules/eslint/bin/eslint.js",
     "node_modules/eslint/bin",
     "node_modules/deep-is/test/neg-vs-pos-0.js",
-    "node_modules/deep-is/test/NaN.js",
     "node_modules/typescript/SECURITY.md",
     "node_modules/typescript/README.md",
     "node_modules/typescript/lib/README.md",
