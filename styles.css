@@ -6,3 +6,12 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.mw-definitions-view {
+  padding: 10px;
+}
+
+.mw-definitions-view input[type="text"] {
+  width: 100%;
+  margin-bottom: 1em;
+}
