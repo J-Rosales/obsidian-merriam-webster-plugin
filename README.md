@@ -62,6 +62,15 @@ Quick starting guide for new plugin devs:
 Run `npm run build` once you are ready to commit changes. This command type-checks
 and bundles the plugin so you can catch errors before pushing your work.
 
+## Limitations and Troubleshooting
+
+- Requires working internet connection.
+- API keys must be valid; otherwise lookups fail with error notices.
+- Merriam-Webster APIs have rate limits—see [their documentation](https://dictionaryapi.com/) for details.
+
+If definitions or synonyms fail to load, check your API keys and network connectivity.
+Make sure the plugin was rebuilt (`npm run build`) before copying files to your vault.
+
 ## Manually installing the plugin
 
 - Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
