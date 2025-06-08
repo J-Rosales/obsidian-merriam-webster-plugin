@@ -66,6 +66,8 @@ export default class DefinitionsView extends ItemView {
 
     let defsDiv: HTMLDivElement;
     let synDiv: HTMLDivElement;
+    let defs: DictionaryResult;
+    let syns: ThesaurusResult;
     if (this.plugin.settings.synonymsOnTop) {
       synDiv = containerEl.createDiv('mw-synonyms');
       defsDiv = containerEl.createDiv('mw-definitions');
@@ -74,7 +76,7 @@ export default class DefinitionsView extends ItemView {
       synDiv = containerEl.createDiv('mw-synonyms');
     }
     try {
-      const defs: DictionaryResult = await this.plugin.lookupDefinitions(this.word);
+      ({ defs, syns } = await this.plugin.lookupWord(this.word));
       defsDiv.createEl('h3', { text: toTitleCase(this.word) });
 
       if (defs.pluralForms && defs.pluralForms.length > 0) {
@@ -132,11 +134,11 @@ export default class DefinitionsView extends ItemView {
       }
     } catch (err) {
       defsDiv.createEl('div', { text: String(err) });
+      return;
     }
 
     synDiv.createEl('h3', { text: 'Synonyms' });
     try {
-      const syns: ThesaurusResult = await this.plugin.lookupSynonyms(this.word);
       const list = synDiv.createEl('ul');
       for (const s of syns.synonyms) {
         const li = list.createEl('li');
