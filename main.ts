@@ -35,7 +35,7 @@ export default class MerriamWebsterPlugin extends Plugin {
     this.addSettingTab(new MerriamWebsterSettingTab(this.app, this));
 
     this.registerEvent(
-      this.app.workspace.on('editor-menu', async (menu, editor) => {
+      this.app.workspace.on('editor-menu', (menu, editor) => {
         const selection = editor.getSelection().trim();
         if (!selection || /\s/.test(selection)) {
           return;
@@ -79,6 +79,21 @@ export default class MerriamWebsterPlugin extends Plugin {
         });
       })
     );
+
+    this.addCommand({
+      id: 'open-definitions-view',
+      name: 'Open Definitions View',
+      checkCallback: (checking: boolean) => {
+        const open = this.app.workspace.getLeavesOfType(VIEW_TYPE_DEFINITIONS).length > 0;
+        if (open) {
+          return false;
+        }
+        if (!checking) {
+          this.openDefinitionsView('');
+        }
+        return true;
+      },
+    });
   }
 
   onunload() {
