@@ -7,6 +7,13 @@ interface MerriamWebsterPluginSettings {
   thesaurusApiKey: string;
   synonymsOnTop: boolean;
   cacheSize: number;
+  cache: CacheEntry[];
+}
+
+interface CacheEntry {
+  word: string;
+  dictionary: DictionaryResult;
+  thesaurus: ThesaurusResult;
 }
 
 const DEFAULT_SETTINGS: MerriamWebsterPluginSettings = {
@@ -14,6 +21,7 @@ const DEFAULT_SETTINGS: MerriamWebsterPluginSettings = {
   thesaurusApiKey: '',
   synonymsOnTop: false,
   cacheSize: 0,
+  cache: [],
 };
 
 export default class MerriamWebsterPlugin extends Plugin {
@@ -80,6 +88,21 @@ export default class MerriamWebsterPlugin extends Plugin {
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    if (!Array.isArray(this.settings.cache)) {
+      this.settings.cache = [];
+    }
+    if (this.settings.cacheSize < 0) {
+      this.settings.cacheSize = 0;
+    }
+    if (
+      this.settings.cacheSize >= 0 &&
+      this.settings.cache.length > this.settings.cacheSize
+    ) {
+      this.settings.cache.splice(
+        0,
+        this.settings.cache.length - this.settings.cacheSize
+      );
+    }
   }
 
   async saveSettings() {
@@ -92,6 +115,26 @@ export default class MerriamWebsterPlugin extends Plugin {
 
   async lookupSynonyms(word: string): Promise<ThesaurusResult> {
     return fetchThesaurus(word, this.settings.thesaurusApiKey);
+  }
+
+  async lookupWord(word: string): Promise<{ defs: DictionaryResult; syns: ThesaurusResult }> {
+    const [defs, syns] = await Promise.all([
+      this.lookupDefinitions(word),
+      this.lookupSynonyms(word),
+    ]);
+    await this.updateCache(word, defs, syns);
+    return { defs, syns };
+  }
+
+  private async updateCache(word: string, defs: DictionaryResult, syns: ThesaurusResult) {
+    // remove any existing entry for the same word
+    this.settings.cache = this.settings.cache.filter((e) => e.word !== word);
+    this.settings.cache.push({ word, dictionary: defs, thesaurus: syns });
+    if (this.settings.cacheSize < 0) this.settings.cacheSize = 0;
+    if (this.settings.cacheSize > 0 && this.settings.cache.length > this.settings.cacheSize) {
+      this.settings.cache.splice(0, this.settings.cache.length - this.settings.cacheSize);
+    }
+    await this.saveSettings();
   }
 }
 
@@ -191,7 +234,7 @@ class MerriamWebsterSettingTab extends PluginSettingTab {
           })
       );
 
-    new Setting(containerEl)
+    const cacheSetting = new Setting(containerEl)
       .setName('Cache size')
       .addText((text) => {
         text.inputEl.type = 'number';
@@ -202,9 +245,38 @@ class MerriamWebsterSettingTab extends PluginSettingTab {
           .setValue(String(this.plugin.settings.cacheSize))
           .onChange(async (value) => {
             const parsed = parseInt(value);
-            this.plugin.settings.cacheSize = isNaN(parsed) ? 0 : parsed;
+            const size = isNaN(parsed) ? 0 : Math.max(0, parsed);
+            const old = this.plugin.settings.cacheSize;
+            this.plugin.settings.cacheSize = size;
+            if (
+              size >= 0 &&
+              old > size &&
+              this.plugin.settings.cache.length > size
+            ) {
+              this.plugin.settings.cache.splice(
+                0,
+                this.plugin.settings.cache.length - size
+              );
+            }
             await this.plugin.saveSettings();
+            updateCacheInfo();
           });
       });
+    const infoEl = cacheSetting.settingEl.createEl('small');
+    const formatCacheSize = () => {
+      const bytes = new TextEncoder().encode(
+        JSON.stringify(this.plugin.settings.cache)
+      ).length;
+      if (bytes >= 1024 * 1024) {
+        return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+      }
+      return `${(bytes / 1024).toFixed(1)} kB`;
+    };
+    const updateCacheInfo = () => {
+      infoEl.setText(
+        `Number of recent lookups to keep. Log size: ${formatCacheSize()}`
+      );
+    };
+    updateCacheInfo();
   }
 }
