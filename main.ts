@@ -46,6 +46,7 @@ export default class MerriamWebsterPlugin extends Plugin {
           item
             .setTitle('Define')
             .setIcon('book')
+            .setSection('mw-dictionary')
             .onClick(() => {
               this.openDefinitionsView(word);
             });
@@ -63,8 +64,11 @@ export default class MerriamWebsterPlugin extends Plugin {
               );
             }
             menu.addItem((item) => {
-              item.setTitle('Synonyms');
-              item.setSubmenu(subMenu);
+              item
+                .setTitle('Synonyms')
+                .setIcon('pencil')
+                .setSection('mw-dictionary')
+                .setSubmenu(subMenu);
             });
           }
         } catch (err) {

@@ -18,7 +18,11 @@ export default class DefinitionsView extends ItemView {
   }
 
   getDisplayText(): string {
-    return 'Definitions';
+    return 'Definitions View';
+  }
+
+  getIcon(): string {
+    return 'book';
   }
 
   async onOpen() {
@@ -50,12 +54,19 @@ export default class DefinitionsView extends ItemView {
     }
 
     const defsDiv = containerEl.createDiv('mw-definitions');
-    defsDiv.createEl('h3', { text: `Definitions of ${this.word}` });
     try {
       const defs: DictionaryResult = await this.plugin.lookupDefinitions(this.word);
-      const list = defsDiv.createEl('ul');
+      defsDiv.createEl('h3', { text: this.word });
+      if (defs.wordType) {
+        defsDiv.createEl('h4', { text: defs.wordType });
+      }
+      if (defs.pluralForm) {
+        defsDiv.createEl('div', { text: `Plural: ${defs.pluralForm}` });
+      }
+      const list = defsDiv.createEl('ol');
       for (const d of defs.definitions) {
-        list.createEl('li', { text: d });
+        const clean = d.charAt(0).toUpperCase() + d.slice(1);
+        list.createEl('li', { text: clean });
       }
     } catch (err) {
       defsDiv.createEl('div', { text: String(err) });
@@ -67,7 +78,11 @@ export default class DefinitionsView extends ItemView {
       const syns: ThesaurusResult = await this.plugin.lookupSynonyms(this.word);
       const list = synDiv.createEl('ul');
       for (const s of syns.synonyms) {
-        list.createEl('li', { text: s });
+        const li = list.createEl('li');
+        const btn = li.createEl('button', { text: s });
+        btn.addEventListener('click', () => {
+          this.setWord(s);
+        });
       }
     } catch (err) {
       synDiv.createEl('div', { text: String(err) });
