@@ -57,6 +57,11 @@ Quick starting guide for new plugin devs:
 - `npm i` or `yarn` to install dependencies.
 - `npm run dev` to start compilation in watch mode.
 
+## Before committing
+
+Run `npm run build` once you are ready to commit changes. This command type-checks
+and bundles the plugin so you can catch errors before pushing your work.
+
 ## Manually installing the plugin
 
 - Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
