@@ -60,14 +60,34 @@ export default class DefinitionsView extends ItemView {
       }
     });
 
+    containerEl.createEl('div', {
+      text: 'Enter a word and press Enter to search.',
+      cls: 'mw-search-hint',
+    });
+
     if (!this.word) {
+      return;
+    }
+
+    let defs: DictionaryResult;
+    let syns: ThesaurusResult;
+    try {
+      ({ defs, syns } = await this.plugin.lookupWord(this.word));
+    } catch (err) {
+      containerEl.createDiv({ text: String(err) });
+      return;
+    }
+
+    if (defs.entries.length === 0 && syns.synonyms.length === 0) {
+      containerEl.createDiv({
+        text: `No results found for "${this.word}".`,
+        cls: 'mw-not-found',
+      });
       return;
     }
 
     let defsDiv: HTMLDivElement;
     let synDiv: HTMLDivElement;
-    let defs: DictionaryResult;
-    let syns: ThesaurusResult;
     if (this.plugin.settings.synonymsOnTop) {
       synDiv = containerEl.createDiv('mw-synonyms');
       defsDiv = containerEl.createDiv('mw-definitions');
@@ -75,9 +95,8 @@ export default class DefinitionsView extends ItemView {
       defsDiv = containerEl.createDiv('mw-definitions');
       synDiv = containerEl.createDiv('mw-synonyms');
     }
-    try {
-      ({ defs, syns } = await this.plugin.lookupWord(this.word));
-      defsDiv.createEl('h3', { text: toTitleCase(this.word) });
+
+    defsDiv.createEl('h3', { text: toTitleCase(this.word) });
 
       if (defs.pluralForms && defs.pluralForms.length > 0) {
         const pluralLine = defsDiv.createDiv();
@@ -132,29 +151,29 @@ export default class DefinitionsView extends ItemView {
           }
         }
       }
-    } catch (err) {
-      defsDiv.createEl('div', { text: String(err) });
-      return;
-    }
 
     synDiv.createEl('h3', { text: 'Synonyms' });
     try {
-      const list = synDiv.createEl('ul');
-      for (const s of syns.synonyms) {
-        const li = list.createEl('li');
-        const btn = li.createEl('button', {
-          text: toTitleCase(s.word),
-          cls: 'mw-word-btn',
-        });
-        const label = s.label?.toLowerCase();
-        if (label) {
-          if (label.includes('formal')) btn.addClass('mw-word-btn-formal');
-          else if (label.includes('archaic')) btn.addClass('mw-word-btn-archaic');
-          else if (label.includes('literary')) btn.addClass('mw-word-btn-literary');
+      if (syns.synonyms.length === 0) {
+        synDiv.createEl('div', { text: 'No synonyms found.', cls: 'mw-no-synonyms' });
+      } else {
+        const list = synDiv.createEl('ul');
+        for (const s of syns.synonyms) {
+          const li = list.createEl('li');
+          const btn = li.createEl('button', {
+            text: toTitleCase(s.word),
+            cls: 'mw-word-btn',
+          });
+          const label = s.label?.toLowerCase();
+          if (label) {
+            if (label.includes('formal')) btn.addClass('mw-word-btn-formal');
+            else if (label.includes('archaic')) btn.addClass('mw-word-btn-archaic');
+            else if (label.includes('literary')) btn.addClass('mw-word-btn-literary');
+          }
+          btn.addEventListener('click', () => {
+            this.setWord(s.word);
+          });
         }
-        btn.addEventListener('click', () => {
-          this.setWord(s.word);
-        });
       }
     } catch (err) {
       synDiv.createEl('div', { text: String(err) });
