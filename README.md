@@ -92,3 +92,7 @@ If you have multiple URLs, you can also do:
 ## API Documentation
 
 See https://github.com/obsidianmd/obsidian-api
+
+## Development Plan
+
+A detailed step-by-step plan for building and maintaining this plugin is available at [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) in the repository root.

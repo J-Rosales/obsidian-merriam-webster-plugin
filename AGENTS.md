@@ -22,3 +22,6 @@
 ## Validation
 - Run `npm run build` to type-check and bundle the plugin. Fix any TypeScript errors before committing.
 
+## Roadmap Reference
+For detailed implementation steps and priorities, see the [development plan](./DEVELOPMENT_PLAN.md) in the repository root. Keep this roadmap in mind to avoid feature creep and maintain focus.
+
